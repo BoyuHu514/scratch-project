@@ -30,15 +30,12 @@ const ExerciseList = () => {
     }
   };
 
-  const onMoreInformation = (type) => {
-    console.log('onMoreInformation exercise:', type);
-  };
   useEffect(() => {
     fetchExercise();
   }, []);
 
   return (
-    <div style={{ width: '100%'}}>
+    <div style={{ width: '100%' }}>
       <h1>My Exercises</h1>
       <div
         className='card-container'
@@ -49,7 +46,6 @@ const ExerciseList = () => {
             className='card'
             key={exercise._id}
             exercise={exercise}
-            onMoreInformation={onMoreInformation}
           />
         ))}
       </div>
