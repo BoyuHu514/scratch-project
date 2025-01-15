@@ -1,11 +1,13 @@
 import User from '../models/userModel.js';
 import jwt from 'jsonwebtoken';
 
-// OAuth Client Credentials
+// Github OAuth Client Credentials
 const CLIENT_ID = process.env.VITE_CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
-export const getAccessToken = async (req, res) => {
+const oauthController = {};
+
+oauthController.getAccessToken = async (req, res) => {
   try {
     // User's one time use access token
     const { code } = req.query;
@@ -18,7 +20,7 @@ export const getAccessToken = async (req, res) => {
       {
         method: 'POST',
         headers: { Accept: 'application/json' },
-      },
+      }
     );
     const data = await response.json();
     // Log the access token response to see what GitHub returned
@@ -32,7 +34,7 @@ export const getAccessToken = async (req, res) => {
   }
 };
 
-export const getUserData = async (req, res) => {
+oauthController.getUserData = async (req, res) => {
   const authorizationHeader = req.get('Authorization');
   try {
     // Ask GitHub for the user's account information
@@ -52,7 +54,7 @@ export const getUserData = async (req, res) => {
   }
 };
 
-export const upsertUser = async (req, res) => {
+oauthController.upsertUser = async (req, res) => {
   try {
     const { githubId, login, email, avatarUrl, name } = req.body;
     if (!githubId) {
@@ -68,8 +70,9 @@ export const upsertUser = async (req, res) => {
         email,
         name: name || login,
         avatarUrl,
+        password: undefined,
       });
-      await user.save();
+      await user.create();
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
@@ -92,3 +95,73 @@ export const upsertUser = async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+// Google OAuth Client Credentials
+oauthController.googleSignin = async (req, res) => {
+  const { token } = req.body;
+  console.log('in google signin \n ', token);
+
+  if (!token) {
+    return res.status(400).json({ message: 'Token is required' });
+  }
+
+  try {
+    // Verify the token with Google's API using fetch
+    const response = await fetch(
+      `https://oauth2.googleapis.com/tokeninfo?id_token=${token}`
+    );
+
+    if (!response.ok) {
+      console.log('Failed to verify Google token by Google Api');
+      throw new Error('Failed to verify Google token by Google Api');
+    }
+    console.log(response);
+
+    const googleData = await response.json();
+    console.log(googleData);
+
+    const { email, name, picture, sub: googleId } = googleData;
+
+    // console.log('Verified User:', { email, name, picture, googleId });
+
+    let user = await User.findOne({ email });
+    console.log('user: ', user);
+
+    if (!user) {
+      // If the user doesn't exist, create a new user
+      user = await User.create({
+        name,
+        email,
+        provider: 'google',
+        googleId, // Google-specific user ID whitch is  sub in payload of token
+        avatarUrl: picture,
+      });
+    }
+    console.log('userCreated: ', user);
+
+    // generate a session token for your app, it is optinal, just to be flexible to manage the claims
+    const appToken = jwt.sign(
+      { userId: user._id, username: user.name },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '1d',
+      }
+    );
+
+    // Respond with user data and session token
+    res.status(200).json({
+      message: 'User authenticated successfully',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+      token: appToken, // Your app's session token
+    });
+  } catch (error) {
+    console.error('Error Signin Google:', error);
+    res.status(401).json({ message: `Error Signin Google: ${error}` });
+  }
+};
+
+export default oauthController;

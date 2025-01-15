@@ -13,15 +13,12 @@ const GoogleSignInButton = ({ onGoogleSignIn }) => {
       window.google.accounts.id.renderButton(
         document.getElementById('google-signin-button'), // Target element
         {
-          theme: 'outline', // Button style
+          theme: 'filled_blue', // Button style
           size: 'large', // Button size
-          class: 'g_id_signin',
-          type: 'standard',
-          shape: 'rectangular',
-          theme: 'filled_blue',
-          text: 'signin_with',
-          size: 'large',
-          logo_alignment: 'left',
+          type: 'standard', // Button type
+          shape: 'rectangular', // Button shape
+          text: 'signin_with', // Text displayed on the button
+          logo_alignment: 'left', // Alignment of the logo
         }
       );
     }
