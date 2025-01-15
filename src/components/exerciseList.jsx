@@ -38,7 +38,7 @@ const ExerciseList = () => {
   }, []);
 
   return (
-    <div style={{ width: '100%'}}>
+    <div style={{ width: '100%' }}>
       <h1>My Exercises</h1>
       <div
         className='card-container'
