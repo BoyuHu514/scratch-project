@@ -3,21 +3,48 @@ import { useParams } from 'react-router-dom';
 import config from '../config';
 // import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import '../styles/exerciseDetails.css';
+import AddExerciseForm from './AddExerciseForm';
+import UpdateExerciseForm from './UpdateExerciseForm';
 
 const ExerciseDetails = () => {
   const { type } = useParams(); // Get type from route params
   const [exercises, setExercises] = useState([]);
-  // const [exerciseType, setExerciseType] = useState(type); // adding this so when forum pops up it doesnt require distance field
 
   // makes the form visibile or not
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [date, setDate] = useState('');
   const [distance, setDistance] = useState('');
   const [duration, setDuration] = useState('');
+  // create state that updates
+  const [exerciseToUpdate, setExerciseToUpdate] = useState(null);
+  // checking if we are updating or not
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
 
   // TO DO
   //alert when deleting an exercise
   // add accept button
+
+  // makes form visibile or invisible depending on the action you are doing
+  const toggleForm = () => {
+    setIsFormVisible(!isFormVisible);
+    setIsUpdateMode(false);
+    setExerciseToUpdate(null);
+  };
+
+  // handling click for when its update. Here it will change update mode to true
+  const handleUpdateClick = (exercise) => {
+    setExerciseToUpdate(exercise);
+
+    console.log('Original Date:', exercise.date);
+    const formattedDate = new Date(exercise.date).toISOString().split('T')[0];
+    console.log('Formatted Date for input:', formattedDate);
+    setDate(formattedDate);
+    // setDate(exercise.date);
+    setDistance(exercise.distance);
+    setDuration(exercise.duration);
+    setIsUpdateMode(true);
+    setIsFormVisible(true);
+  };
 
   useEffect(() => {
     const fetchExercises = async () => {
@@ -33,6 +60,7 @@ const ExerciseDetails = () => {
           console.error('Failed to fetch todos');
         }
         const exercises = await response.json();
+        console.log(exercises); /// test
         setExercises(exercises);
       } catch (error) {
         console.error(`Error fetching ${type} exercises:`, error);
@@ -49,6 +77,7 @@ const ExerciseDetails = () => {
       alert('Date and duration needs to be filled');
       return;
     }
+
     try {
       const response = await fetch(`${config.baseURL}/exercise/${type}`, {
         method: 'POST',
@@ -72,14 +101,58 @@ const ExerciseDetails = () => {
       setDate('');
       setDistance('');
       setDuration('');
-      setIsFormVisible(false); // oonce state is updated we close the form
+      setIsFormVisible(false); // once state is updated we close the form
     } catch (error) {
       console.error(`Error fetching ${type} exercises:`, error);
     }
   };
 
-  const toggleForm = () => {
-    setIsFormVisible(!isFormVisible);
+  // Update already existing exercise
+  const updateExercise = async (event) => {
+    event.preventDefault();
+    console.log('Updating Exercise:', { date, distance, duration });
+    if (!date || !duration) {
+      alert('Date and duration needs to be filled');
+      return;
+    }
+
+    // use PUT method to our backend
+    try {
+      const response = await fetch(
+        `${config.baseURL}/exercise/${exerciseToUpdate._id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type,
+            date,
+            distance,
+            duration,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        console.error('Failed updating exercise');
+      }
+
+      const updatedExercise = await response.json();
+      // need to set the exercise
+      setExercises((prevExercises) =>
+        prevExercises.map((exercise) =>
+          exercise._id === exerciseToUpdate._id ? updatedExercise : exercise
+        )
+      );
+      setDate('');
+      setDistance('');
+      setDuration('');
+      setIsFormVisible(false);
+      setIsUpdateMode(false);
+    } catch (error) {
+      console.error(`Error updating ${type} exercises:`, error);
+    }
   };
 
   return (
@@ -93,29 +166,27 @@ const ExerciseDetails = () => {
         <div className='form-container'>
           <div className='overlay' onClick={toggleForm}></div>
           <div className='form-content'>
-            <form className='add-exercise' onSubmit={createNewExercise}>
-              <label>Date: </label>
-              <input
-                type='date'
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
+            {isUpdateMode ? (
+              <UpdateExerciseForm
+                date={date}
+                distance={distance}
+                duration={duration}
+                setDate={setDate}
+                setDistance={setDistance}
+                setDuration={setDuration}
+                onSubmit={updateExercise}
               />
-              <label> Distance (kms):</label>
-              <input
-                type='number'
-                value={distance}
-                onChange={(e) => setDistance(e.target.value)}
+            ) : (
+              <AddExerciseForm
+                date={date}
+                distance={distance}
+                duration={duration}
+                setDate={setDate}
+                setDistance={setDistance}
+                setDuration={setDuration}
+                onSubmit={createNewExercise}
               />
-              <label> Duration (mins):</label>
-              <input
-                type='number'
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-              />
-              <button className='submit-button' type='submit'>
-                Submit
-              </button>
-            </form>
+            )}
             <button className='close-form' onClick={toggleForm}>
               X
             </button>
@@ -123,14 +194,19 @@ const ExerciseDetails = () => {
         </div>
       )}
       <ul>
-        {exercises.map((exercise) => (
-          <li className='exercise-item' key={exercise._id}>
+        {exercises.map((exercise, index) => (
+          <li className='exercise-item' key={exercise._id || index}>
             <div className='exercise-info'>
               {new Date(exercise.date).toLocaleDateString()} -{' '}
               {exercise.distance || 'N/A'} km, {exercise.duration} mins
             </div>
             <div className='button-container'>
-              <button className='update-button'>Update</button>
+              <button
+                className='update-button'
+                onClick={() => handleUpdateClick(exercise)}
+              >
+                Update
+              </button>
               <button className='delete-button'>Delete</button>
             </div>
           </li>

@@ -39,8 +39,12 @@
   justify-content: center;
 }
 
+.update-exercise {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 .exercise-item {
-  /* list-style: none; */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -54,12 +58,9 @@
 .button-container {
   display: flex;
   gap: 10px;
-  /* justify-content: flex-end; */
 }
 .update-button,
 .delete-button {
-  /* padding: 5px 10px; */
-
   font-size: 12px;
   border-radius: 3px;
 }

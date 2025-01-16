@@ -3,11 +3,17 @@ import OAuthCallback from './OAuthCallback';
 import { Link } from 'react-router';
 import { Button, Form, Container, Row, Col } from 'react-bootstrap';
 import '../styles/login.css';
+import GoogleSignInButton from './googleSignInButton';
 
 const LoginPage = () => {
   const githubToken = useOAuth();
+  console.log(githubToken);
 
-  const handleOAuthLogin = () => {
+  const handleGoogleSignIn = (response) => {};
+
+  const handleGithubSignIn = () => {
+    console.log(import.meta.env.VITE_CLIENT_ID);
+
     window.location.assign(
       'https://github.com/login/oauth/authorize?client_id=' +
         import.meta.env.VITE_CLIENT_ID
@@ -34,14 +40,16 @@ const LoginPage = () => {
             <Button
               variant='secondary'
               className='w-100 mb-2'
-              onClick={handleOAuthLogin}
+              onClick={handleGithubSignIn}
             >
               Sign in with Github
             </Button>
+            <GoogleSignInButton onGoogleSignIn={handleGoogleSignIn} />
             <hr />
+            <p>or</p>
+            Sign in with your HealthTracker account
             <Form onSubmit={handleFormSubmit} className='mt-3'>
               <Form.Group className='mb-3' controlId='formUsername'>
-                <Form.Label>Username</Form.Label>
                 <Form.Control
                   type='text'
                   placeholder='Enter username'
@@ -49,7 +57,6 @@ const LoginPage = () => {
                 />
               </Form.Group>
               <Form.Group className='mb-3' controlId='formPassword'>
-                <Form.Label>Password</Form.Label>
                 <Form.Control
                   type='password'
                   placeholder='Enter password'
