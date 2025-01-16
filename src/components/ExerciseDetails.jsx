@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom';
 import config from '../config';
 // import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import '../styles/exerciseDetails.css';
-import AddExerciseForm from './AddExerciseForm';
-import UpdateExerciseForm from './UpdateExerciseForm';
+import AddExerciseForm from './addExerciseForm';
+import UpdateExerciseForm from './updateExerciseForm';
 
 const ExerciseDetails = () => {
   const { type } = useParams(); // Get type from route params
