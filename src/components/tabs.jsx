@@ -2,7 +2,9 @@
 import React, { useState } from 'react';
 import '../styles/tabs.css';
 import ExerciseList from './exerciseList';
-import MedicationsList from './MedicationsList';
+import ExerciseStatistics from './ExerciseStatistics';
+import MedicationsList from './medicationsList';
+
 
 export default function Tabs() {
   const [active, setActive] = useState('tab-1');
@@ -47,6 +49,7 @@ export default function Tabs() {
 
           <div className={`tab-page ${active === 'tab-3' ? 'active' : ''}`}>
             <h2>User Statistics</h2>
+            <ExerciseStatistics />
             <p>
               View your overall health statistics and analyze trends over time.
             </p>
