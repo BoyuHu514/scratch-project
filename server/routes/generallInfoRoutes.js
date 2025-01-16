@@ -4,7 +4,7 @@ import authenticate from '../middlewares/authenticate.js';
 
 const router = express.Router();
 
-router.get('/', authenticate, generalInfoController.getGeneralInfo);
+router.get('/', authenticate, generalInfoController.getUserGeneralInfo);
 router.post('/', authenticate, generalInfoController.createOrUpdateGeneralInfo);
 router.delete('/', authenticate, generalInfoController.deleteGeneralInfo);
 

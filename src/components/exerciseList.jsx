@@ -30,9 +30,6 @@ const ExerciseList = () => {
     }
   };
 
-  const onMoreInformation = (type) => {
-    console.log('onMoreInformation exercise:', type);
-  };
   useEffect(() => {
     fetchExercise();
   }, []);
@@ -49,7 +46,6 @@ const ExerciseList = () => {
             className='card'
             key={exercise._id}
             exercise={exercise}
-            onMoreInformation={onMoreInformation}
           />
         ))}
       </div>

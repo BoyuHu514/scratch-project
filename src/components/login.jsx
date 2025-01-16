@@ -1,22 +1,55 @@
 import useOAuth from '../hooks/useOAuth';
 import OAuthCallback from './OAuthCallback';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { Button, Form, Container, Row, Col } from 'react-bootstrap';
 import '../styles/login.css';
 import GoogleSignInButton from './googleSignInButton';
+import config from '../config';
 
 const LoginPage = () => {
   const githubToken = useOAuth();
-  console.log(githubToken);
+  const navigate = useNavigate();
 
-  const handleGoogleSignIn = (response) => {};
+  const handleGoogleSignIn = async (res) => {
+    try {
+      console.log('Google Login Response:', res);
+
+      // Extract the token and decode it
+      const token = res.credential;
+
+      // Optionally send the token to the backend
+      const response = await fetch(`${config.baseURL}/oauth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      });
+
+      // Handle the backend response
+      if (!response.ok) {
+        throw new Error(
+          `Backend error: ${response.status} ${response.statusText}`
+        );
+      }
+      const data = await response.json();
+      console.log('Backend Verification Response:', data);
+      // If our server returns a token, store it
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
+      // Redirect to a logged-in page
+      navigate('/tabs');
+    } catch (err) {
+      console.error('Error verifying token:', err);
+    }
+  };
 
   const handleGithubSignIn = () => {
     console.log(import.meta.env.VITE_CLIENT_ID);
 
     window.location.assign(
       'https://github.com/login/oauth/authorize?client_id=' +
-        import.meta.env.VITE_CLIENT_ID
+        import.meta.env.VITE_CLIENT_ID +
+        '&scope=user:email'
     );
   };
 

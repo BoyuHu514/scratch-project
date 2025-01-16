@@ -5,8 +5,8 @@ import authenticate from '../middlewares/authenticate.js';
 const router = express.Router();
 
 router.get('/', authenticate, medController.getAllMeds);
-router.post('/', authenticate, medController.createMed);
-router.put('/:id', authenticate, medController.updateMed);
-router.delete('/:id', authenticate, medController.deleteMed);
+router.post('/', authenticate, medController.createMeds);
+router.put('/:id', authenticate, medController.updateMeds);
+router.delete('/:id', authenticate, medController.deleteMeds);
 
 export default router;
