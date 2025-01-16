@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import config from '../config';
 import '../styles/exerciseDetails.css';
 import AddExerciseForm from './addExerciseForm';
@@ -7,9 +7,10 @@ import UpdateExerciseForm from './updateExerciseForm';
 
 const ExerciseDetails = () => {
   const { type } = useParams(); // Get type from route params
+  const navigate = useNavigate();
   const [exercises, setExercises] = useState([]);
 
-  // makes the form visibile or not
+  // makes the form visible or not
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [date, setDate] = useState('');
   const [distance, setDistance] = useState('');
@@ -18,21 +19,20 @@ const ExerciseDetails = () => {
   const [exerciseToUpdate, setExerciseToUpdate] = useState(null);
   // checking if we are updating or not
   const [isUpdateMode, setIsUpdateMode] = useState(false);
+  const token = localStorage.getItem('token');
 
-  // makes form visibile or invisible depending on the action you are doing
+  // Makes form visible or invisible depending on the action
   const toggleForm = () => {
     setIsFormVisible(!isFormVisible);
     setIsUpdateMode(false);
     setExerciseToUpdate(null);
   };
 
-  // handling click for when its update. Here it will change update mode to true
+  // Handling click for when it's update. Here it will change update mode to true
   const handleUpdateClick = (exercise) => {
     setExerciseToUpdate(exercise);
 
-    // console.log('Original Date:', exercise.date);
     const formattedDate = new Date(exercise.date).toISOString().split('T')[0];
-    // console.log('Formatted Date for input:', formattedDate);
     setDate(formattedDate);
     setDistance(exercise.distance);
     setDuration(exercise.duration);
@@ -40,35 +40,44 @@ const ExerciseDetails = () => {
     setIsFormVisible(true);
   };
 
-  useEffect(() => {
-    const fetchExercises = async () => {
-      try {
-        const response = await fetch(`${config.baseURL}/exercise/${type}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            // Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!response.ok) {
-          console.error('Failed to fetch todos');
-        }
-        const exercises = await response.json();
-        // console.log(exercises); /// test
-        setExercises(exercises);
-      } catch (error) {
-        console.error(`Error fetching ${type} exercises:`, error);
+  // Fetch exercises from the server
+  const fetchExercises = async () => {
+    try {
+      if (!token) {
+        console.error('No token found. Redirecting to login.');
+        navigate('/login');
+        return;
       }
-    };
-    fetchExercises();
-  }, [type, exercises]); // needed to add exercises in dependency array in order to show new changes when we update
 
-  // Need to create new exercise
+      const response = await fetch(`${config.baseURL}/exercise/${type}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        console.error('Failed to fetch exercises.');
+        return;
+      }
+
+      const data = await response.json();
+      setExercises(data);
+    } catch (error) {
+      console.error(`Error fetching ${type} exercises:`, error);
+    }
+  };
+
+  useEffect(() => {
+    fetchExercises();
+  }, [type, token, navigate]);
+
   const createNewExercise = async (event) => {
     event.preventDefault();
 
     if (!date || !duration) {
-      alert('Date and duration needs to be filled');
+      alert('Date and duration need to be filled');
       return;
     }
 
@@ -77,40 +86,35 @@ const ExerciseDetails = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          type,
-          date,
-          distance,
-          duration,
-        }),
+        body: JSON.stringify({ type, date, distance, duration }),
       });
+
       if (!response.ok) {
         console.error('Failed creating new exercise');
+        return;
       }
+
       const data = await response.json();
-      // update state with the new exercise
-      setExercises((prevExercises) => [data.exercise, ...prevExercises]);
-      // after we create new exercise we clear the fields and make form invisible.
+      setExercises((prevExercises) => [data.exercise, ...prevExercises]); // Update state with the new exercise
       setDate('');
       setDistance('');
       setDuration('');
-      setIsFormVisible(false); // once state is updated we close the form
+      setIsFormVisible(false); // Once state is updated we close the form
     } catch (error) {
-      console.error(`Error fetching ${type} exercises:`, error);
+      console.error(`Error creating ${type} exercise:`, error);
     }
   };
 
-  // Update already existing exercise
   const updateExercise = async (event) => {
     event.preventDefault();
-    // console.log('Updating Exercise:', { date, distance, duration });
+
     if (!date || !duration) {
-      alert('Date and duration needs to be filled');
+      alert('Date and duration need to be filled');
       return;
     }
 
-    // use PUT method to our backend
     try {
       const response = await fetch(
         `${config.baseURL}/exercise/${exerciseToUpdate._id}`,
@@ -118,6 +122,7 @@ const ExerciseDetails = () => {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             type,
@@ -130,31 +135,28 @@ const ExerciseDetails = () => {
 
       if (!response.ok) {
         console.error('Failed updating exercise');
+        return;
       }
 
-      const updatedExercise = await response.json();
-      // need to set the exercise
-      setExercises((prevExercises) =>
-        prevExercises.map((exercise) =>
-          exercise._id === exerciseToUpdate._id ? updatedExercise : exercise
-        )
-      );
+      // Fetch the latest data after update
+      await fetchExercises();
+
+      // Clear form and close it
       setDate('');
       setDistance('');
       setDuration('');
       setIsFormVisible(false);
       setIsUpdateMode(false);
     } catch (error) {
-      console.error(`Error updating ${type} exercises:`, error);
+      console.error(`Error updating ${type} exercise:`, error);
     }
   };
 
   const deleteExercise = async (exerciseId) => {
     const confirmed = window.confirm(
-      'Are you sure you want to do delete this exercise?'
+      'Are you sure you want to delete this exercise?'
     );
 
-    // if user doesn't confirm then return
     if (!confirmed) return;
 
     try {
@@ -162,18 +164,20 @@ const ExerciseDetails = () => {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (!response.ok) {
-        console.error('failed deleting exercise');
+        console.error('Failed deleting exercise');
+        return;
       }
 
-      setExercises((prevExercises) => {
-        return prevExercises.filter((exercise) => exercise._id !== exerciseId);
-      });
+      setExercises((prevExercises) =>
+        prevExercises.filter((exercise) => exercise._id !== exerciseId)
+      );
     } catch (error) {
-      console.error('Error in deleting exercise', error);
+      console.error(`Error deleting ${type} exercise:`, error);
     }
   };
 
@@ -217,8 +221,8 @@ const ExerciseDetails = () => {
         </div>
       )}
       <ul>
-        {exercises.map((exercise, index) => (
-          <li className='exercise-item' key={exercise._id || index}>
+        {exercises.map((exercise) => (
+          <li className='exercise-item' key={exercise._id}>
             <div className='exercise-info'>
               {new Date(exercise.date).toLocaleDateString()} -{' '}
               {exercise.distance || 'N/A'} km, {exercise.duration} mins

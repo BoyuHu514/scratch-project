@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import useOAuth from '../hooks/useOAuth';
 import OAuthCallback from './OAuthCallback';
 import { Link, useNavigate } from 'react-router';
@@ -6,10 +7,49 @@ import '../styles/login.css';
 import '../index.css'
 import GoogleSignInButton from './googleSignInButton';
 import config from '../config';
+import React, { useEffect } from 'react';
 
 const LoginPage = () => {
   const githubToken = useOAuth();
   const navigate = useNavigate();
+
+  // Check token on page load
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.log('No token found. Staying on login page.');
+        return; // No token, stay on the login page
+      }
+
+      try {
+        // Validate the token with the backend
+        const response = await fetch(`${config.baseURL}/authenticate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Token is valid. Redirecting to home page.', data);
+          navigate('/tabs'); // Redirect to the home page
+        } else {
+          console.log(
+            'Invalid token. Clearing token and staying on login page.'
+          );
+          localStorage.removeItem('token'); // Clear invalid token
+        }
+      } catch (error) {
+        console.error('Error validating token:', error);
+        localStorage.removeItem('token'); // Clear invalid token
+      }
+    };
+
+    checkToken();
+  }, [navigate]);
 
   const handleGoogleSignIn = async (res) => {
     try {
@@ -66,6 +106,7 @@ const LoginPage = () => {
         <OAuthCallback githubToken={githubToken} />
       ) : (
         <Row className='justify-content-md-center '>
+
           <Col xs={12} sm={10} md={8} lg={6} className="login-card">
             <div className='text-center mb-4 '>
               <h2 style={{ 

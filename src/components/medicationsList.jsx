@@ -5,10 +5,16 @@ import config from '../config';
 
 const MedicationsList = () => {
   const [medications, setMedications] = useState([]);
-
+  const token = localStorage.getItem('token');
   const fetchMedications = async () => {
     try {
-      const response = await fetch(`${config.baseURL}/medications`); 
+      const response = await fetch(`${config.baseURL}/medications`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await response.json();
       setMedications(data);
     } catch (error) {
@@ -21,10 +27,11 @@ const MedicationsList = () => {
   }, []);
 
   return (
+
     <div className="standard-container">
     <div className="medications-list">
       <h1>My Medications</h1>
-      <table className="medications-table">
+      <table className='medications-table'>
         <thead>
           <tr>
             <th>Name</th>
@@ -43,7 +50,11 @@ const MedicationsList = () => {
               <td>{med.dosage}</td>
               <td>{med.frequency}</td>
               <td>{new Date(med.startDate).toLocaleDateString()}</td>
-              <td>{med.endDate ? new Date(med.endDate).toLocaleDateString() : 'Ongoing'}</td>
+              <td>
+                {med.endDate
+                  ? new Date(med.endDate).toLocaleDateString()
+                  : 'Ongoing'}
+              </td>
             </tr>
           ))}
         </tbody>
