@@ -40,17 +40,30 @@ oauthController.getUserData = async (req, res) => {
     // Ask GitHub for the user's account information
     const response = await fetch('https://api.github.com/user', {
       method: 'GET',
-      // Forward the Authorization header to GitHub
       headers: { Authorization: authorizationHeader },
     });
     const data = await response.json();
-    // Log the user's GitHub profile information
     console.log('GitHub user data:', data);
+
+    // Fetch the user's email addresses
+    const emailResponse = await fetch('https://api.github.com/user/emails', {
+      method: 'GET',
+      headers: { Authorization: authorizationHeader },
+    });
+    const emailData = await emailResponse.json();
+    console.log('GitHub user email data:', emailData);
+
+    // Extract the primary email (if available)
+    const primaryEmail = emailData.find((email) => email.primary)?.email;
+    console.log('Primary Email:', primaryEmail);
+    data.email = primaryEmail;
     return res.json(data);
   } catch (err) {
     // Log any error that occurred while fetching user data
-    console.error('Error retrieving user data:', err);
-    return res.status(500).json({ error: 'Failed to fetch user data' });
+    console.error('Error retrieving user data from github api:', err);
+    return res
+      .status(500)
+      .json({ error: 'Failed to fetch user data from github api' });
   }
 };
 
@@ -63,36 +76,37 @@ oauthController.upsertUser = async (req, res) => {
         .json({ error: 'Missing GitHub user ID in request body.' });
     }
 
-    let user = await User.findOne({ githubId });
+    let user = await User.findOne({ email });
     if (!user) {
-      user = new User({
+      user = await User.create({
         githubId,
         email,
-        name: name || login,
+        name: name === null ? login : name,
         avatarUrl,
-        password: undefined,
+        provider: 'github',
       });
-      await user.create();
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+    const appToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
 
-    return res.json({
-      success: true,
+    return res.status(200).json({
+      message: 'User authenticated successfully',
       user: {
-        _id: user._id,
+        userId: user._id,
         githubId: user.githubId,
         email: user.email,
         name: user.name,
         avatarUrl: user.avatarUrl,
       },
-      token,
+      token: appToken,
     });
   } catch (err) {
-    console.error('Error in /github upsert route:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error('Error in creating github user:', err);
+    return res
+      .status(401)
+      .json({ message: `Error in creating github user: ${err}` });
   }
 };
 
@@ -115,17 +129,14 @@ oauthController.googleSignin = async (req, res) => {
       console.log('Failed to verify Google token by Google Api');
       throw new Error('Failed to verify Google token by Google Api');
     }
-    console.log(response);
 
     const googleData = await response.json();
-    console.log(googleData);
 
     const { email, name, picture, sub: googleId } = googleData;
 
     // console.log('Verified User:', { email, name, picture, googleId });
 
     let user = await User.findOne({ email });
-    console.log('user: ', user);
 
     if (!user) {
       // If the user doesn't exist, create a new user
@@ -149,7 +160,7 @@ oauthController.googleSignin = async (req, res) => {
     );
 
     // Respond with user data and session token
-    res.status(200).json({
+    return res.status(200).json({
       message: 'User authenticated successfully',
       user: {
         id: user._id,
@@ -160,7 +171,7 @@ oauthController.googleSignin = async (req, res) => {
     });
   } catch (error) {
     console.error('Error Signin Google:', error);
-    res.status(401).json({ message: `Error Signin Google: ${error}` });
+    return res.status(401).json({ message: `Error Signin Google: ${error}` });
   }
 };
 
