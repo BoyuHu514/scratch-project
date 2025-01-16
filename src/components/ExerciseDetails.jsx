@@ -35,11 +35,10 @@ const ExerciseDetails = () => {
   const handleUpdateClick = (exercise) => {
     setExerciseToUpdate(exercise);
 
-    console.log('Original Date:', exercise.date);
+    // console.log('Original Date:', exercise.date);
     const formattedDate = new Date(exercise.date).toISOString().split('T')[0];
-    console.log('Formatted Date for input:', formattedDate);
+    // console.log('Formatted Date for input:', formattedDate);
     setDate(formattedDate);
-    // setDate(exercise.date);
     setDistance(exercise.distance);
     setDuration(exercise.duration);
     setIsUpdateMode(true);
@@ -60,14 +59,14 @@ const ExerciseDetails = () => {
           console.error('Failed to fetch todos');
         }
         const exercises = await response.json();
-        console.log(exercises); /// test
+        // console.log(exercises); /// test
         setExercises(exercises);
       } catch (error) {
         console.error(`Error fetching ${type} exercises:`, error);
       }
     };
     fetchExercises();
-  }, [type]);
+  }, [type, exercises]); // needed to add exercises in dependency array in order to show new changes when we update
 
   // Need to create new exercise
   const createNewExercise = async (event) => {
@@ -110,7 +109,7 @@ const ExerciseDetails = () => {
   // Update already existing exercise
   const updateExercise = async (event) => {
     event.preventDefault();
-    console.log('Updating Exercise:', { date, distance, duration });
+    // console.log('Updating Exercise:', { date, distance, duration });
     if (!date || !duration) {
       alert('Date and duration needs to be filled');
       return;

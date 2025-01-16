@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import '../styles/tabs.css';
 import ExerciseList from './exerciseList';
-import MedicationsList from './MedicationsList';
+import MedicationsList from './medicationsList';
 
 export default function Tabs() {
   const [active, setActive] = useState('tab-1');
