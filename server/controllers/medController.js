@@ -16,7 +16,7 @@ medController.getAllMeds = async (req, res) => {
 medController.createMeds = async (req, res) => {
   try {
     const { userId } = req;
-    const { dosage, frequency, startDate, endDate } = req.body;
+    const { dosage, frequency, startDate, endDate, type, purpose, notes } = req.body;
     if (!dosage || !frequency || !startDate) {
       return res
         .status(400)
@@ -28,6 +28,9 @@ medController.createMeds = async (req, res) => {
       frequency,
       startDate,
       endDate,
+      type,
+      purpose,
+      notes,
     });
     const savedMed = await newMed.save();
     res
@@ -42,10 +45,10 @@ medController.createMeds = async (req, res) => {
 medController.updateMeds = async (req, res) => {
   try {
     const { id } = req.params;
-    const { dosage, frequency, startDate, endDate } = req.body;
+    const { dosage, frequency, startDate, endDate, type, purpose, notes } = req.body;
     const updatedMed = await Med.findByIdAndUpdate(
       id,
-      { dosage, frequency, startDate, endDate },
+      { dosage, frequency, startDate, endDate, type, purpose, notes },
       { new: true, runValidators: true }
     );
     if (!updatedMed) {
@@ -63,7 +66,7 @@ medController.updateMeds = async (req, res) => {
   }
 };
 
-medController.deleteMedMeds = async (req, res) => {
+medController.deleteMeds = async (req, res) => {
   try {
     const { id } = req.params;
     const deletedMed = await Med.findByIdAndDelete(id);
