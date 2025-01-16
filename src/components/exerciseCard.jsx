@@ -15,8 +15,6 @@ const ExerciseCard = ({ exercise, onMoreInformation }) => {
 
   return (
     <Card className='exercise-card'>
-      {/* Optional Image */}
-      {/* <Card.Img variant='top' src='' alt={`${type} activity`} /> */}
       <Card.Body>
         <Card.Title>{type}</Card.Title>
       </Card.Body>
