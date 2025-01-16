@@ -1,3 +1,44 @@
 .login-container {
-  margin-top: 8rem;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  background-color: #ebfcf1;
+  width: 100%;
+}
+
+body, .login-container {
+  background-color: #ebfcf1;
+}
+
+.login-card {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  min-width: 400px;
+}
+
+.github-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: white;
+  transition: all 0.2s ease;
+}
+
+.github-button:hover {
+  background-color: #000000;
+}
+
+#google-signin-button {
+  width: 100% !important;
+}
+
+#google-signin-button > div {
+  width: 100% !important;
+}
+
+#google-signin-button iframe {
+  width: 100% !important;
 }

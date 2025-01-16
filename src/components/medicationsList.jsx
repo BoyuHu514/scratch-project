@@ -21,6 +21,7 @@ const MedicationsList = () => {
   }, []);
 
   return (
+    <div className="standard-container">
     <div className="medications-list">
       <h1>My Medications</h1>
       <table className="medications-table">
@@ -47,6 +48,7 @@ const MedicationsList = () => {
           ))}
         </tbody>
       </table>
+    </div>
     </div>
   );
 };

@@ -1,12 +1,12 @@
 :root {
-  background-color: #7f8d96;
+  background-color: #ebfcf1;
 }
 
 #root {
   margin: 8rem auto;
   padding: 2rem;
   text-align: center;
-  background-color: #7f8d96;
+  background-color: #ebfcf1;
 }
 
 .logo {
@@ -35,6 +35,3 @@
   padding: 2em;
 }
 
-.read-the-docs {
-  color: white;
-}

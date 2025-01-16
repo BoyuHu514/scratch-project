@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Login from './components/login';
 import Signup from './components/signup';
 import Tabs from './components/tabs';
-import healthLogo from './assets/health_logo.png';
+import healthLogo from './assets/logo.webp';
 import ExerciseDetails from './components/ExerciseDetails';
 
 function App() {

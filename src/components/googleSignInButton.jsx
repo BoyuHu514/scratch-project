@@ -5,7 +5,7 @@ const GoogleSignInButton = ({ onGoogleSignIn }) => {
     /* Ensure the Google API is available */
     if (window.google) {
       window.google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+        client_id: import.meta.env.GOOGLE_CLIENT_ID,
         callback: onGoogleSignIn, // Function to handle the login response
       });
 
@@ -13,12 +13,14 @@ const GoogleSignInButton = ({ onGoogleSignIn }) => {
       window.google.accounts.id.renderButton(
         document.getElementById('google-signin-button'), // Target element
         {
-          theme: 'filled_blue', // Button style
+          theme: 'outline', // Button style
           size: 'large', // Button size
-          type: 'standard', // Button type
-          shape: 'rectangular', // Button shape
-          text: 'signin_with', // Text displayed on the button
-          logo_alignment: 'left', // Alignment of the logo
+          class: 'g_id_signin',
+          type: 'standard',
+          shape: 'rectangular',
+          theme: 'filled_blue',
+          text: 'signin_with',
+          logo_alignment: 'left',
         }
       );
     }
