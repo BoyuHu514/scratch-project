@@ -5,7 +5,6 @@ import ExerciseList from './exerciseList';
 import ExerciseStatistics from './ExerciseStatistics';
 import MedicationsList from './medicationsList';
 
-
 export default function Tabs() {
   const [active, setActive] = useState('tab-1');
 
