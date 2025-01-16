@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import config from '../config';
-// import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import '../styles/exerciseDetails.css';
 import AddExerciseForm from './addExerciseForm';
 import UpdateExerciseForm from './updateExerciseForm';
@@ -19,10 +18,6 @@ const ExerciseDetails = () => {
   const [exerciseToUpdate, setExerciseToUpdate] = useState(null);
   // checking if we are updating or not
   const [isUpdateMode, setIsUpdateMode] = useState(false);
-
-  // TO DO
-  //alert when deleting an exercise
-  // add accept button
 
   // makes form visibile or invisible depending on the action you are doing
   const toggleForm = () => {
@@ -154,13 +149,42 @@ const ExerciseDetails = () => {
     }
   };
 
+  const deleteExercise = async (exerciseId) => {
+    const confirmed = window.confirm(
+      'Are you sure you want to do delete this exercise?'
+    );
+
+    // if user doesn't confirm then return
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(`${config.baseURL}/exercise/${exerciseId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        console.error('failed deleting exercise');
+      }
+
+      setExercises((prevExercises) => {
+        return prevExercises.filter((exercise) => exercise._id !== exerciseId);
+      });
+    } catch (error) {
+      console.error('Error in deleting exercise', error);
+    }
+  };
+
   return (
     <div>
-      <h1>{type} Exercises</h1>
-      <button className='add-button' onClick={toggleForm}>
-        Add
-      </button>
-
+      <header className='exercise-header'>
+        <h1 className='exercise-title'>{type} Exercises</h1>
+        <button className='add-button' onClick={toggleForm}>
+          Add
+        </button>
+      </header>
       {isFormVisible && (
         <div className='form-container'>
           <div className='overlay' onClick={toggleForm}></div>
@@ -206,7 +230,12 @@ const ExerciseDetails = () => {
               >
                 Update
               </button>
-              <button className='delete-button'>Delete</button>
+              <button
+                className='delete-button'
+                onClick={() => deleteExercise(exercise._id)}
+              >
+                Delete
+              </button>
             </div>
           </li>
         ))}

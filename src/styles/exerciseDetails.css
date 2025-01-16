@@ -1,3 +1,15 @@
+.exercise-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.exercise-title {
+  text-align: center;
+  flex-grow: 1;
+}
+
 .form-container,
 .overlay {
   width: 100vw;
@@ -36,7 +48,7 @@
 .add-exercise {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-end;
 }
 
 .update-exercise {
@@ -44,6 +56,7 @@
   flex-direction: column;
   justify-content: center;
 }
+
 .exercise-item {
   display: flex;
   justify-content: space-between;
@@ -51,6 +64,7 @@
   padding: 10px;
   text-align: center;
 }
+
 .exercise-info {
   flex-grow: 1;
 }
@@ -59,8 +73,22 @@
   display: flex;
   gap: 10px;
 }
+
+.add-button {
+  font-size: 12px;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
 .update-button,
 .delete-button {
   font-size: 12px;
   border-radius: 3px;
+}
+
+.submit-button {
+  margin-top: 10px;
+  padding: 3px;
 }
