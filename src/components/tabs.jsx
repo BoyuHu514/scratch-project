@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import '../styles/tabs.css';
 import ExerciseList from './exerciseList';
 import ExerciseStatistics from './ExerciseStatistics';
+import MedicationsList from './medicationsList';
+
 
 export default function Tabs() {
   const [active, setActive] = useState('tab-1');
@@ -42,9 +44,9 @@ export default function Tabs() {
             <ExerciseList />
           </div>
           <div className={`tab-page ${active === 'tab-2' ? 'active' : ''}`}>
-            <h2>Medications</h2>
-            <p>Keep track of your medications, dosages, and schedules.</p>
+            <MedicationsList />
           </div>
+
           <div className={`tab-page ${active === 'tab-3' ? 'active' : ''}`}>
             <h2>User Statistics</h2>
             <ExerciseStatistics />

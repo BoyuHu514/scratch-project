@@ -5,9 +5,11 @@ import mongoose from 'mongoose';
 import userRoutes from './routes/userRoutes.js';
 import oauthRoutes from './routes/oauthRoutes.js';
 import exerciseRoutes from './routes/exerciseRoutes.js';
+import medicationRoutes from './routes/medRoutes.js';
 
 // Enable CORS (Cross-Origin Resource Sharing)
 app.use(cors());
+
 // PORT defined in .env or defaults to 3000
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -18,7 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/user', userRoutes); // normal user signup/login
 app.use('/api/oauth', oauthRoutes); // GitHub OAuth
 app.use('/api/exercise', exerciseRoutes);
-
+app.use('/api/medications', medicationRoutes);
 // 404 or “Not Found” Handler
 app.use((_req, _res, next) => {
   const error = new Error('Route Not Found');
