@@ -1,68 +1,36 @@
 .exercise-card {
-  margin: 15px;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
-  width: 22rem;  /* Increased from 18rem for more space */
-  background-color: #7f8d96 !important;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.exercise-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+  margin: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  width: 18rem;
+  background-color: #c3dbdb !important;
 }
 
 .exercise-card h3 {
   margin-top: 0;
-  margin-bottom: 15px;
-  color: #ffffff;
-  font-size: 1.25rem;
-  letter-spacing: 0.5px;
-}
-
-.exercise-card-content {
-  margin: 15px 0;
   color: #ffffff;
 }
 
 .exercise-card button {
-  margin-right: 10px;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  margin-right: 5px;
 }
 
 .delete-btn {
   background-color: #48535b !important;
   border-color: #48535b !important;
-  opacity: 0.9;
 }
 
 .delete-btn:hover {
   background-color: #b4756e !important;
   border-color: #b4756e !important;
-  opacity: 1;
 }
 
 .update-btn {
-  background-color: #b4756e !important;
-  border-color: #b4756e !important;
-  opacity: 0.9;
+  background-color: #66B2B2 !important;
+  border-color: #66B2B2 !important;
 }
 
 .update-btn:hover {
   background-color: #48535b !important;
   border-color: #48535b !important;
-  opacity: 1;
-}
-
-/* Add responsive adjustments */
-@media (max-width: 768px) {
-  .exercise-card {
-    width: calc(100% - 30px); /* Full width minus margins */
-    margin: 10px auto;
-  }
 }
