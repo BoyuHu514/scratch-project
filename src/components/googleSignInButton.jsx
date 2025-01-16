@@ -5,7 +5,7 @@ const GoogleSignInButton = ({ onGoogleSignIn }) => {
     /* Ensure the Google API is available */
     if (window.google) {
       window.google.accounts.id.initialize({
-        client_id: import.meta.env.GOOGLE_CLIENT_ID,
+        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
         callback: onGoogleSignIn, // Function to handle the login response
       });
 
@@ -18,7 +18,6 @@ const GoogleSignInButton = ({ onGoogleSignIn }) => {
           class: 'g_id_signin',
           type: 'standard',
           shape: 'rectangular',
-          theme: 'filled_blue',
           text: 'signin_with',
           logo_alignment: 'left',
         }
