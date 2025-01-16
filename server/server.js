@@ -6,6 +6,7 @@ import userRoutes from './routes/userRoutes.js';
 import oauthRoutes from './routes/oauthRoutes.js';
 import exerciseRoutes from './routes/exerciseRoutes.js';
 import medicationRoutes from './routes/medRoutes.js';
+import authenticate from './middlewares/authenticate.js';
 
 // PORT defined in .env or defaults to 3000
 const PORT = process.env.PORT || 3000;
@@ -16,6 +17,21 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Protected route (requires authentication)
+// app.use('/api/protected', authenticate, (req, res) => {
+//   res.status(200).json({
+//     message: 'Protected route accessed successfully',
+//     userId: req.userId,
+//   });
+// });
+
+// Token validation endpoint
+app.post('/api/authenticate', authenticate, (req, res) => {
+  res.status(200).json({
+    message: 'Token is valid',
+    userId: req.userId,
+  });
+});
 // Routes
 app.use('/api/user', userRoutes); // normal user signup/login
 app.use('/api/oauth', oauthRoutes); // GitHub OAuth

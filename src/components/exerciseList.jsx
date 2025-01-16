@@ -9,14 +9,14 @@ const ExerciseList = () => {
   const [exercises, setExercises] = useState([]);
   const fetchExercise = async () => {
     // //getting token
-    // const token = localStorage.getItem('token');
-    console.log('in fetch data');
+    const token = localStorage.getItem('token');
+    // console.log('in fetch data');
     try {
       const response = await fetch(`${config.baseURL}/exercise`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          //   Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       if (!response.ok) {
@@ -24,7 +24,6 @@ const ExerciseList = () => {
       }
       const exercises = await response.json();
       setExercises(exercises);
-      console.log(exercises);
     } catch (error) {
       console.error('Error fetching todos:', error);
     }

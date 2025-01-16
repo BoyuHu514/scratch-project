@@ -25,13 +25,17 @@ exerciseController.getLatestExerciseForAllTypes = async (req, res) => {
       },
     ]);
 
-    console.log('getAllExercises : grouped', exercises);
+    console.log(
+      `getLatestExerciseForAllTypes for userID ${req.userId}`,
+      exercises
+    );
     res.status(200).json(exercises);
   } catch (error) {
     console.error('Error fetching grouped exercises:', error);
     res.status(500).json({ message: 'Failed to fetch grouped exercises' });
   }
 };
+
 exerciseController.getAllExercisesByType = async (req, res) => {
   const { type } = req.params;
   try {
@@ -41,7 +45,10 @@ exerciseController.getAllExercisesByType = async (req, res) => {
       date: -1,
     });
 
-    console.log('getAllExercisesByType', exercises);
+    console.log(
+      `getAllExercisesByType of type ${type} userID ${req.userId}`,
+      exercises
+    );
     res.status(200).json(exercises);
   } catch (error) {
     console.error(`error fetching all ${type}`, error);
@@ -51,13 +58,17 @@ exerciseController.getAllExercisesByType = async (req, res) => {
 exerciseController.createExercise = async (req, res) => {
   try {
     const { type, distance, duration, date, caloriesBurned } = req.body;
-    console.log('in createExercise', {
-      type,
-      distance,
-      duration,
-      date,
-      caloriesBurned,
-    });
+    console.log(
+      'in createExercise',
+      {
+        type,
+        distance,
+        duration,
+        date,
+        caloriesBurned,
+      },
+      req.userId
+    );
 
     // Validate required fields
     if (!type || !duration) {
@@ -70,8 +81,8 @@ exerciseController.createExercise = async (req, res) => {
       duration,
       date,
       caloriesBurned,
-      userId: '678449e8240629f7a64dce95',
-      // userId: req.user.username, // Assuming `username` is in the JWT payload
+      // userId: req.userId,
+      userId: new mongoose.Types.ObjectId(req.userId),
     });
 
     res
