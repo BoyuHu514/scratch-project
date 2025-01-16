@@ -16,13 +16,23 @@ medController.getAllMeds = async (req, res) => {
 medController.createMeds = async (req, res) => {
   try {
     const { userId } = req;
-    const { dosage, frequency, startDate, endDate, type, purpose, notes } = req.body;
+    const {
+      medName,
+      dosage,
+      frequency,
+      startDate,
+      endDate,
+      type,
+      purpose,
+      notes,
+    } = req.body;
     if (!dosage || !frequency || !startDate) {
       return res
         .status(400)
         .json({ error: 'Dosage, frequency, and startDate are required' });
     }
     const newMed = new Med({
+      medName,
       userId,
       dosage,
       frequency,
@@ -33,6 +43,8 @@ medController.createMeds = async (req, res) => {
       notes,
     });
     const savedMed = await newMed.save();
+    console.log('created medication ', savedMed);
+
     res
       .status(201)
       .json({ message: 'Medication record created', med: savedMed });
@@ -45,7 +57,8 @@ medController.createMeds = async (req, res) => {
 medController.updateMeds = async (req, res) => {
   try {
     const { id } = req.params;
-    const { dosage, frequency, startDate, endDate, type, purpose, notes } = req.body;
+    const { dosage, frequency, startDate, endDate, type, purpose, notes } =
+      req.body;
     const updatedMed = await Med.findByIdAndUpdate(
       id,
       { dosage, frequency, startDate, endDate, type, purpose, notes },
@@ -54,12 +67,10 @@ medController.updateMeds = async (req, res) => {
     if (!updatedMed) {
       return res.status(404).json({ error: 'Medication record not found' });
     }
-    res
-      .status(200)
-      .json({
-        message: 'Medication record updated successfully',
-        med: updatedMed,
-      });
+    res.status(200).json({
+      message: 'Medication record updated successfully',
+      med: updatedMed,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'faild to update' });
