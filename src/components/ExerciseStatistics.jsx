@@ -158,12 +158,25 @@ const ExerciseStatistics = () => {
       <div className='bg-white rounded-lg shadow-lg p-6'>
         <div className='flex flex-col md:flex-row items-center justify-center gap-8'>
           <div className='w-80 h-80'>
+              `Total Duration: ${totalDuration} minutes`
+              ];
+              
+              return lines;
+            }
+          }
+        }
+      }
+    }
+  
+    return (
+      <div className="w-100">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+          <div className="w-80 h-80">
             <Doughnut data={chartData} options={options} />
           </div>
         </div>
       </div>
-    </div>
-  );
-};
-
-export default ExerciseStatistics;
+    );
+  };
+  
+  export default ExerciseStatistics;

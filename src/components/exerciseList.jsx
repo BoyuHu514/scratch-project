@@ -34,12 +34,9 @@ const ExerciseList = () => {
   }, []);
 
   return (
-    <div style={{ width: '100%' }}>
+    <div className="standard-container">
       <h1>My Exercises</h1>
-      <div
-        className='card-container'
-        // style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'evenly' }}
-      >
+      <div className='card-container'>
         {exercises.map((exercise) => (
           <ExerciseCard
             className='card'
