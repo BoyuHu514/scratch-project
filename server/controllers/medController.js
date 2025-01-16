@@ -1,5 +1,6 @@
 import Med from '../models/medModel.js';
 
+
 const medController = {};
 
 medController.getAllMeds = async (req, res) => {
@@ -16,14 +17,15 @@ medController.getAllMeds = async (req, res) => {
 medController.createMeds = async (req, res) => {
   try {
     const { userId } = req;
-    const { dosage, frequency, startDate, endDate, type, purpose, notes } = req.body;
-    if (!dosage || !frequency || !startDate) {
+    const {  medName, dosage, frequency, startDate, endDate, type, purpose, notes } = req.body;
+    if (! medName || !dosage || !frequency || !startDate) {
       return res
         .status(400)
         .json({ error: 'Dosage, frequency, and startDate are required' });
     }
     const newMed = new Med({
       userId,
+      medName,
       dosage,
       frequency,
       startDate,
@@ -45,10 +47,10 @@ medController.createMeds = async (req, res) => {
 medController.updateMeds = async (req, res) => {
   try {
     const { id } = req.params;
-    const { dosage, frequency, startDate, endDate, type, purpose, notes } = req.body;
+    const {  medName, dosage, frequency, startDate, endDate, type, purpose, notes } = req.body;
     const updatedMed = await Med.findByIdAndUpdate(
       id,
-      { dosage, frequency, startDate, endDate, type, purpose, notes },
+      {  medName, dosage, frequency, startDate, endDate, type, purpose, notes },
       { new: true, runValidators: true }
     );
     if (!updatedMed) {
