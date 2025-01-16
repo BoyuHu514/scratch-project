@@ -15,7 +15,7 @@ const OAuthCallback = ({ githubToken }) => {
           'http://localhost:3000/api/oauth/github/userdata',
           {
             headers: { Authorization: 'Bearer ' + githubToken },
-          },
+          }
         );
 
         const githubProfile = await userDataRes.json();
@@ -33,13 +33,13 @@ const OAuthCallback = ({ githubToken }) => {
               email: githubProfile.email,
               avatarUrl: githubProfile.avatar_url,
             }),
-          },
+          }
         );
         const upsertData = await upsertRes.json();
 
         // If our server returns a token, store it
         if (upsertData.token) {
-          localStorage.setItem('appToken', upsertData.token);
+          localStorage.setItem('token', upsertData.token);
         }
         // Redirect to a logged-in page
         navigate('/tabs');
